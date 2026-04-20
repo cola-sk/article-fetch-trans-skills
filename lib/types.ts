@@ -23,6 +23,10 @@ export interface TweetData {
   favorite_count?: number
   retweet_count?: number
   reply_count?: number
+  // Article specific fields
+  isArticle?: boolean
+  articleTitle?: string
+  articleContent?: string // Full article content in HTML or plain text
 }
 
 export interface TranslationResult {
