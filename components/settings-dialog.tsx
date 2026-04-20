@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Settings as SettingsIcon, RefreshCw, Check, ChevronsUpDown } from "lucide-react"
+import { Settings as SettingsIcon, RefreshCw, Check, ChevronsUpDown, Chrome } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -262,6 +262,66 @@ export function SettingsDialog({ settings, onSave }: SettingsDialogProps) {
             <p className="text-muted-foreground text-xs">
               点击「获取模型列表」从 API 获取可用模型，或直接输入模型名称
             </p>
+          </div>
+
+          {/* Chrome CDP Settings */}
+          <div className="border-t pt-4 mt-2">
+            <div className="flex items-center gap-2 mb-3">
+              <Chrome className="size-4 text-blue-500" />
+              <h4 className="font-medium text-sm">Chrome 浏览器设置</h4>
+            </div>
+            <p className="text-muted-foreground text-xs mb-3">
+              用于抓取需要登录才能访问的 X 文章内容
+            </p>
+            
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="useChromeForArticles"
+                  checked={localSettings.useChromeForArticles}
+                  onChange={(e) =>
+                    setLocalSettings((prev) => ({
+                      ...prev,
+                      useChromeForArticles: e.target.checked,
+                    }))
+                  }
+                  className="size-4 rounded border-border"
+                />
+                <Label htmlFor="useChromeForArticles" className="text-sm font-normal">
+                  使用本地 Chrome 抓取文章
+                </Label>
+              </div>
+
+              {localSettings.useChromeForArticles && (
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="chromeDebugUrl">Chrome 调试地址</Label>
+                  <Input
+                    id="chromeDebugUrl"
+                    placeholder="http://localhost:9222"
+                    value={localSettings.chromeDebugUrl}
+                    onChange={(e) =>
+                      setLocalSettings((prev) => ({
+                        ...prev,
+                        chromeDebugUrl: e.target.value,
+                      }))
+                    }
+                  />
+                  <div className="text-muted-foreground text-xs space-y-1">
+                    <p>启动 Chrome 时添加参数：</p>
+                    <code className="block bg-muted px-2 py-1 rounded text-[10px] break-all">
+                      --remote-debugging-port=9222
+                    </code>
+                    <p className="mt-2">
+                      Windows: 右键 Chrome 快捷方式 → 属性 → 目标后添加参数
+                    </p>
+                    <p>
+                      Mac: 终端运行 /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <DialogFooter>

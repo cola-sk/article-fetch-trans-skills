@@ -6,6 +6,9 @@ export interface Settings {
   aiBaseUrl: string
   aiModel: string
   aiApiKey: string
+  // Chrome CDP settings for fetching content requiring authentication
+  chromeDebugUrl: string
+  useChromeForArticles: boolean
 }
 
 const STORAGE_KEY = "twitter-translator-settings"
@@ -14,6 +17,8 @@ const defaultSettings: Settings = {
   aiBaseUrl: "http://localhost:11434/v1",
   aiModel: "qwen2.5:7b",
   aiApiKey: "",
+  chromeDebugUrl: "http://localhost:9222",
+  useChromeForArticles: true,
 }
 
 export function useSettings() {

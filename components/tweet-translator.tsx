@@ -54,17 +54,59 @@ export function TweetTranslator({ onPublishToNotion }: TweetTranslatorProps) {
     setTranslatedText(null)
     setNotionUrl(undefined)
 
+    const trimmedUrl = url.trim()
+    const isArticle = /\/article\/\d+/.test(trimmedUrl)
+
     try {
-      const response = await fetch("/api/fetch-tweet", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim() }),
-      })
+      let data: TweetData
 
-      const data = await response.json()
+      // If it's an article and Chrome is enabled, try Chrome first
+      if (isArticle && settings.useChromeForArticles && settings.chromeDebugUrl) {
+        try {
+          const chromeResponse = await fetch("/api/fetch-via-chrome", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              url: trimmedUrl,
+              chromeDebugUrl: settings.chromeDebugUrl,
+            }),
+          })
 
-      if (!response.ok) {
-        throw new Error(data.error || "获取推文失败")
+          const chromeData = await chromeResponse.json()
+
+          if (chromeResponse.ok && chromeData.text && !chromeData.text.includes("[Unable to fetch")) {
+            data = chromeData
+          } else {
+            // Fall back to regular fetch
+            throw new Error("Chrome fetch failed, falling back to regular fetch")
+          }
+        } catch {
+          // Fall back to regular fetch if Chrome fails
+          const response = await fetch("/api/fetch-tweet", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: trimmedUrl }),
+          })
+
+          data = await response.json()
+
+          if (!response.ok) {
+            throw new Error(data.error || "获取推文失败")
+          }
+        }
+      } else {
+        // Regular fetch for tweets or when Chrome is disabled
+        const response = await fetch("/api/fetch-tweet", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: trimmedUrl }),
+        })
+
+        data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || "获取推文失败")
+        }
       }
 
       setTweet(data)
@@ -76,7 +118,7 @@ export function TweetTranslator({ onPublishToNotion }: TweetTranslatorProps) {
     } finally {
       setIsFetching(false)
     }
-  }, [url])
+  }, [url, settings.useChromeForArticles, settings.chromeDebugUrl])
 
   const translateTweet = useCallback(async (tweetData: TweetData) => {
     if (!settings.aiBaseUrl) {
