@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { ExternalLink, Heart, MessageCircle, Repeat2, BadgeCheck } from "lucide-react"
+import { ExternalLink, Heart, MessageCircle, Repeat2, BadgeCheck, FileText } from "lucide-react"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import type { TweetData } from "@/lib/types"
 
@@ -63,6 +63,17 @@ export function TweetCard({ tweet, className }: TweetCardProps) {
         </div>
       </CardHeader>
       <CardContent className="pb-3">
+        {tweet.isArticle && tweet.articleTitle && (
+          <div className="flex items-center gap-2 mb-3 pb-3 border-b">
+            <FileText className="size-4 text-blue-500" />
+            <span className="text-xs font-medium text-blue-500">X Article</span>
+          </div>
+        )}
+        
+        {tweet.isArticle && tweet.articleTitle && (
+          <h3 className="text-lg font-semibold mb-3">{tweet.articleTitle}</h3>
+        )}
+        
         <p className="whitespace-pre-wrap text-pretty leading-relaxed">{tweet.text}</p>
         
         {tweet.media && tweet.media.length > 0 && (
@@ -96,22 +107,24 @@ export function TweetCard({ tweet, className }: TweetCardProps) {
           {formatDate(tweet.created_at)}
         </p>
       </CardContent>
-      <CardFooter className="border-t pt-3">
-        <div className="flex items-center gap-6 text-muted-foreground text-sm">
-          <div className="flex items-center gap-1.5">
-            <MessageCircle className="size-4" />
-            <span>{formatCount(tweet.reply_count)}</span>
+      {!tweet.isArticle && (
+        <CardFooter className="border-t pt-3">
+          <div className="flex items-center gap-6 text-muted-foreground text-sm">
+            <div className="flex items-center gap-1.5">
+              <MessageCircle className="size-4" />
+              <span>{formatCount(tweet.reply_count)}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Repeat2 className="size-4" />
+              <span>{formatCount(tweet.retweet_count)}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Heart className="size-4" />
+              <span>{formatCount(tweet.favorite_count)}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Repeat2 className="size-4" />
-            <span>{formatCount(tweet.retweet_count)}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Heart className="size-4" />
-            <span>{formatCount(tweet.favorite_count)}</span>
-          </div>
-        </div>
-      </CardFooter>
+        </CardFooter>
+      )}
     </Card>
   )
 }
