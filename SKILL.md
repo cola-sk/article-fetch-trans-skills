@@ -1,5 +1,5 @@
 ---
-name: article-to-markdown-skill
+name: article-fetch-trans-skills
 description: Extract an arbitrary article URL and translate it into Chinese Markdown using a local OpenAI-compatible service.
 ---
 
@@ -20,10 +20,11 @@ description: Extract an arbitrary article URL and translate it into Chinese Mark
 
 - 生成一个包含文章标题、元信息和翻译后内容的 Markdown 文件。
 - 默认保存到项目根目录下的 `translated_articles/` 目录，文件名由文章标题自动生成。
+- 必须配合 `browser-harness` 使用，以支持客户端渲染页面的抓取。
 
 ## 工作流程
 
-1. 使用浏览器内容抓取（推荐 browser-use skill 或本地浏览器自动化）获取页面 HTML。
+1. 使用浏览器内容抓取（必须 `browser-harness`）获取页面 HTML。
 2. 优先提取 `<article>` 内容；若无则回退到 `<main>`、常见内容区块或整体页面文本。
 3. 清理 HTML、保持标题、列表、段落结构，并生成 Markdown 友好的文本。
 4. 调用本地 OpenAI 兼容接口 `/chat/completions` 进行翻译。

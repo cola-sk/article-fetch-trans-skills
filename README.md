@@ -1,92 +1,92 @@
-# x-blog-trans
+# article-fetch-trans-skill
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+本仓库为一个本地文章抓取与翻译 Skill，目标是从指定文章页面提取正文并生成中文 Markdown 文件。
 
-## Built with v0
+## 核心功能
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+- 抓取任意文章页面的 HTML 内容
+- 优先提取 `<article>`、`<main>` 或常见文章内容区块
+- 将 HTML 转换为 Markdown 友好的文本结构
+- 调用本地 OpenAI 兼容接口进行中译中生成
+- 默认输出为 `translated_articles/` 目录下的 Markdown 文件
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_WftW79wWDBiw85KCWPb3Ta2W9Cjt)
+## 目录说明
 
-## Getting Started
+- `scripts/translate-article-skill.mjs`：核心运行脚本
+- `SKILL.md`：本地 Skill 的说明与输入输出规范
+- `translated_articles/`：默认翻译结果存放目录（执行后自动创建）
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-## Agent Mode: Chrome Skill To Markdown
-
-如果你不想走 Web API，可以直接在本地用 agent + chrome-cdp-skill：
-
-1. 安装技能（已安装可跳过）
+## 快速使用
 
 ```bash
-npx skills add pasky/chrome-cdp-skill -g -y
+node scripts/translate-article-skill.mjs <article-url>
 ```
 
-2. 在 Chrome 打开 `chrome://inspect/#remote-debugging` 并开启开关
-3. 打开任意一个 x.com 页面，首次执行命令时在 Chrome 弹窗点击一次 `Allow debugging`
-4. 执行：
-
-```bash
-pnpm agent:article "https://x.com/<user>/article/<id>"
-```
-
-可选参数：
-
-```bash
-pnpm agent:article "https://x.com/<user>/article/<id>" out/my-article.md --target 77134FAF
-pnpm agent:article "https://x.com/<user>/article/<id>" --skip-translate
-pnpm agent:article "https://x.com/<user>/article/<id>" --baseUrl http://localhost:11434/v1 --model qwen2.5:7b
-```
-
-默认输出到 `exports/*.md`。
-
-## 本地 Agent Skill
-
-已在 `scripts/` 目录下新增本地 agent skill：`scripts/translate-article-skill.mjs`，并提供根目录级别的技能规范 `SKILL.md`。
-
-### 安装 Skill
-
-如果你使用 `skills` CLI，可以通过 `npx` 安装本地技能：
-
-```bash
-cd /Users/liuzhe.x/coding/x-blog-trans
-npx skills add . -g -y
-```
-
-如果你希望直接从 Git 仓库安装，请使用你提供的仓库地址：
-
-```bash
-npx skills add git@github.com:cola-sk/article-fetch-trans-skills.git -g -y
-```
-
-### 运行 Skill
-
-安装后，可直接运行脚本方式使用：
+示例：
 
 ```bash
 node scripts/translate-article-skill.mjs https://x.com/akshay_pachaar/article/2041146899319971922
 ```
 
-该技能会使用浏览器自动化（若安装了 Playwright / browser-use skill）获取文章内容，并调用本地 OpenAI 兼容接口（默认 `http://localhost:3001/v1`）进行翻译。翻译结果默认保存到 `translated_articles/` 目录，文件名根据文章标题生成。
+## 参数说明
 
-## Learn More
+```bash
+node scripts/translate-article-skill.mjs <article-url> [outputFileName] [--baseUrl=http://localhost:3001/v1] [--model=gpt-5-mini]
+```
 
-To learn more, take a look at the following resources:
+- `article-url`：要抓取的文章页面地址
+- `outputFileName`：可选输出文件名，若不指定则根据文章标题自动生成
+- `--baseUrl`：本地 OpenAI 兼容服务地址，默认 `http://localhost:3001/v1`
+- `--model`：调用的模型名，默认 `gpt-5-mini`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+## 输出结果
 
-<a href="https://v0.app/chat/api/kiro/clone/cola-sk/x-blog-trans" alt="Open in Kiro"><img src="https://pdgvvgmkdvyeydso.public.blob.vercel-storage.com/open%20in%20kiro.svg?sanitize=true" /></a>
+- 默认保存到 `translated_articles/` 目录
+- 文件名由文章标题生成，包含 `.md` 后缀
+- 输出内容为纯 Markdown，不带额外说明文本
+
+## 本地 Skill 安装（可选）
+
+如果你使用 `skills` CLI，可以将当前仓库作为本地 Skill 安装：
+
+```bash
+cd article-fetch-trans-skill
+npx skills add . -g -y
+```
+
+也可以从 Git 仓库直接安装：
+
+```bash
+npx skills add git@github.com:cola-sk/article-fetch-trans-skills.git -g -y
+```
+
+安装完成后，可通过 Skill 运行或直接执行脚本。
+
+## 依赖说明
+
+- Node.js 18+
+- 本地 OpenAI 兼容服务（例如 `http://localhost:3001/v1`）
+- 必须安装 `browser-harness`：https://github.com/browser-use/browser-harness
+- 可选：`playwright`，用于更可靠的浏览器渲染抓取
+
+## 工作流程
+
+1. 获取文章页面 HTML
+2. 优先提取 `<article>` 内容
+3. 处理 HTML 为 Markdown 友好文本
+4. 调用本地 OpenAI 兼容接口翻译成中文
+5. 写入 `translated_articles/` 目录
+
+## 常见问题
+
+- 如果页面内容未提取成功，请检查目标页面是否由前端渲染并确认已安装 `browser-harness`，也可搭配 `playwright` 使用
+- 翻译失败时，请确认 `--baseUrl` 指向可用的本地服务
+- 输出文件名若包含非法字符，会被自动清理为合法文件名
+
+## 贡献与扩展
+
+欢迎在 `scripts/translate-article-skill.mjs` 中扩展：
+
+- 支持更多 HTML 内容提取策略
+- 增加 `--skipTranslate` 选项，仅导出提取后的 Markdown
+- 兼容更多 OpenAI API 版本或本地模型服务
