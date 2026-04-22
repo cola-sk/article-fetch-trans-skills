@@ -65,10 +65,10 @@ cd /Users/liuzhe.x/coding/x-blog-trans
 npx skills add . -g -y
 ```
 
-如果该技能发布在仓库中，则可以使用仓库地址安装：
+如果你希望直接从 Git 仓库安装，请使用你提供的仓库地址：
 
 ```bash
-npx skills add <owner>/<repo> -g -y
+npx skills add git@github.com:cola-sk/article-fetch-trans-skills.git -g -y
 ```
 
 ### 运行 Skill
