@@ -1,5 +1,5 @@
 ---
-name: article-fetch-trans-skills
+name: article-fetch-trans-skill
 description: Extract an arbitrary article URL and translate it into Chinese Markdown using a local OpenAI-compatible service.
 ---
 
